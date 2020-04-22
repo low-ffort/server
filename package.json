@@ -1,0 +1,23 @@
+{
+  "name": "next-fortnite",
+  "version": "1.0.0-su-ema",
+  "description": "This is going to be bigger than Fortnut, believe dat!",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "keywords": [
+    "game",
+    "fortnite",
+    "battle",
+    "royale",
+    "lol"
+  ],
+  "author": "bluntano",
+  "license": "idk",
+  "dependencies": {
+    "express": "^4.17.1",
+    "socket.io": "^2.3.0"
+  }
+}
