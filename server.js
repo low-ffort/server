@@ -135,6 +135,12 @@ Player.onConnect = function(socket, username, bulletname) {
 			NAMES.push(Player.list[i].number);
 		};
 
+		if (username.length > 10)
+			username = username.substring(0, 10);
+		
+		if (username.indexOf(' ') >= 0)
+			username = username.replace(/\s/g, '-');
+
 		var usernameToLowerCase = username.toLowerCase();
 		if (NAMES.indexOf(usernameToLowerCase) > -1) {
 			socket.emit('userValidation', {
@@ -150,12 +156,6 @@ Player.onConnect = function(socket, username, bulletname) {
 			});
 			return;
 		};
-
-		if (username.length > 10)
-			username = username.substring(0, 10);
-		
-		if (username.indexOf(' ') >= 0)
-			username = username.replace(/\s/g, '-');
 		
 		uname = username;
 	} else {
