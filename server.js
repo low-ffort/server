@@ -6,8 +6,8 @@ let app = express();
 // not much going on lol
 
 let server = http.createServer(app);
-server.listen(6969, () => {
-	console.log("Sever running on port 6969");
+server.listen(3000, () => {
+	console.log("Sever running on port 3000");
 });
 
 // socket and player stuff for da game below
