@@ -66,7 +66,31 @@ let Player = function(id) {
 		super_update();
 
 		if (self.pressAttack) {
-			self.shootBullet(self.mouseAngle);
+			let allowedBullets = self.score + 1;
+			let shootSpd = 100;
+			let func = function(i) {
+				return function() {
+					if (!self.pressAttack) return;
+					if (i > allowedBullets) return;
+
+					console.log(i, self.number);
+					self.shootBullet(self.mouseAngle);
+
+					if (i >= allowedBullets) {
+						console.log("okay thats enough!");
+						return self.pressAttack = false;
+					} else {
+						setTimeout(func(++i), 50);
+					}
+				};
+			};
+			setTimeout(func(1), 50);
+				// (function(i) {
+				// 	setTimeout(function() {
+				// 		self.shootBullet(self.mouseAngle);
+				// 		if (!self.pressAttack) {};
+				// 	}, 100 * (i + 1));
+				// })(i);
 		};
 	};
 
@@ -144,14 +168,14 @@ Player.onConnect = function(socket, username, bulletname) {
 		var usernameToLowerCase = username.toLowerCase();
 		if (NAMES.indexOf(usernameToLowerCase) > -1) {
 			socket.emit('userValidation', {
-				success:false,
+				success: false,
 				reason:"That name is already taken in this game.",
 			});
 			return;
 		};
 		if (username.length <= 2) {
 			socket.emit('userValidation', {
-				success:false,
+				success: false,
 				reason:"Too short name.",
 			});
 			return;
@@ -215,13 +239,21 @@ Player.getAllInitPack = function() {
 }
 
 Player.onDisconnect = function(socket) {
-	for (let i in SOCKET_LIST) {
-		SOCKET_LIST[i].emit('addToChat', {
-			message: Player.list[socket.id].number + " left the game."
-		});
-	};
-	delete Player.list[socket.id];
-	removePack.player.push(socket.id);
+	try {
+		for (let i in SOCKET_LIST) {
+			SOCKET_LIST[i].emit('addToChat', {
+				message: Player.list[socket.id].number + " left the game."
+			});
+		};
+		delete Player.list[socket.id];
+		removePack.player.push(socket.id);
+	} catch(e) {
+		if (e instanceof TypeError) {
+			return;
+		} else {
+			console.error(e);
+		}
+	}
 };
 
 Player.update = function() {
@@ -264,14 +296,14 @@ let Bullet = function(parent, angle) {
 	self.toRemove = false;
 	let super_update = self.update;
 	self.update = function() {
-		if (self.timer++ > 100)
+		if (self.timer++ > 25)
 			self.toRemove = true;
 		super_update();
 
 		for (let i in Player.list) {
 			var p = Player.list[i];
 			if (self.getDistance(p) < 32 && self.parent !== p.id) {
-				p.hp -= p.bltname.length / 2;
+				p.hp -= 1;
 				if (p.hp <= 0) {
 					let shooter = Player.list[self.parent];
 					if (shooter)
@@ -285,6 +317,7 @@ let Bullet = function(parent, angle) {
 							});
 						};
 					p.hp = p.hpMax;
+					p.score = 0;
 					p.x = Math.random() * 499;
 					p.y = Math.random() * 499;
 				};
@@ -373,12 +406,6 @@ io.on('connection', function(socket) {
 		socket.emit('evalAnswer', res);
 	});
 	
-});
-
-// Nice error handling lmao xd
-
-process.on('uncaughtException', (err) => {
-	console.log("Error occured:", err);
 });
 
 var initPack = {player:[],bullet:[]};
