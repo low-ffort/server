@@ -73,11 +73,9 @@ let Player = function(id) {
 					if (!self.pressAttack) return;
 					if (i > allowedBullets) return;
 
-					console.log(i, self.number);
 					self.shootBullet(self.mouseAngle);
 
 					if (i >= allowedBullets) {
-						console.log("okay thats enough!");
 						return self.pressAttack = false;
 					} else {
 						setTimeout(func(++i), 50);
@@ -378,7 +376,7 @@ io.on('connection', function(socket) {
 	
 	socket.id = socket.handshake.query.clientId;
 	SOCKET_LIST[socket.id] = socket;
-	console.log(`new connection, clientId: ${socket.id}`);
+	//console.log(`new connection, clientId: ${socket.id}`);
 
 	socket.on('userName', function(data) {
 		Player.onConnect(socket, data.username, data.bulletname);
@@ -387,7 +385,7 @@ io.on('connection', function(socket) {
 	socket.on('disconnect', function() {
 		delete SOCKET_LIST[socket.id];
 		Player.onDisconnect(socket);
-		console.log(`disconnected, clientId: ${socket.id}`);
+		//console.log(`disconnected, clientId: ${socket.id}`);
 	});
 
 	socket.on('sendMsgToServer', function(msg) {
@@ -430,4 +428,4 @@ setInterval(function() {
 	removePack.player = [];
 	removePack.bullet = [];
 	
-}, 1000 / 50);
+}, 1000 / 30);
